@@ -1,13 +1,13 @@
-name = "cryptonean/wallet_template"
+name = "konma/karbon-emission"
 version = "0.0.0"
 compiler = "v1.1.9"
 plutus = "v3"
 license = "Apache-2.0"
-description = "Aiken template with wallet connetor "
+description = "Aiken Smart Contract for CET"
 
 [repository]
-user = "cryptonean"
-project = "aiken_project_template"
+user = "KonmaORG"
+project = "Karbon-Emission"
 platform = "github"
 
 [[dependencies]]
