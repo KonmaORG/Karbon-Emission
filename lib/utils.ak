@@ -47,3 +47,17 @@ pub fn token_name_must_be_vkh(inputs: List<Input>, token_name: ByteArray) {
     },
   )
 }
+
+pub fn find_ref_input(inputs: List<Input>, policy_id: PolicyId) {
+  expect Some(input) =
+    list.find(
+      inputs,
+      fn(i) { list.has(i.output.value |> assets.policies, policy_id) },
+    )
+  input
+}
+
+pub fn find_output_with_address(outputs: List<Output>, address: Address) {
+  expect Some(output) = list.find(outputs, fn(o) { o.address == address })
+  output
+}
