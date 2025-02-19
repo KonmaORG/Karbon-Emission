@@ -65,6 +65,15 @@ pub fn find_output_with_address(outputs: List<Output>, address: Address) {
 pub fn must_have_one_output_with_policy(
   outputs: List<Output>,
   policy_id: PolicyId,
+  address: Address,
 ) {
-  list.count(outputs, fn(o) { list.has(o.value |> assets.policies, policy_id) }) == 1
+  list.count(
+    outputs,
+    fn(o) {
+      and {
+        list.has(o.value |> assets.policies, policy_id),
+        o.address == address,
+      }
+    },
+  ) == 1
 }

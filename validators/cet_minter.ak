@@ -25,7 +25,6 @@ validator cet_minter(user_token_policy: PolicyId) {
       assets.quantity_of(cet_output.value, policy_id, token_name) == qty,
       utils.token_name_must_be_vkh(inputs, ref_token_name),
       datum_data == redeemer_data,
-      True,
     }
   }
 

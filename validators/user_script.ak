@@ -21,9 +21,18 @@ validator user_script(_address: Data, cet_policyid: PolicyId) {
         expect [Pair(_, cot_qty)] =
           mint |> assets.tokens(config.cot_policyid) |> dict.to_pairs
         and {
+          cet_qty < 0,
           cet_qty == cot_qty,
-          utils.must_have_one_output_with_policy(outputs, config.cot_policyid),
-          utils.must_have_one_output_with_policy(outputs, cet_policyid),
+          utils.must_have_one_output_with_policy(
+            outputs,
+            config.cot_policyid,
+            self_input.output.address,
+          ),
+          utils.must_have_one_output_with_policy(
+            outputs,
+            cet_policyid,
+            self_input.output.address,
+          ),
         }
       }
       1 -> {
