@@ -15,3 +15,7 @@ name = "aiken-lang/stdlib"
 version = "2.2.0"
 source = "github"
 
+
+[config]
+[config.default]
+cot_policyid = "STATE_TOKEN"

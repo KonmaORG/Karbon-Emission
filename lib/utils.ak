@@ -61,3 +61,10 @@ pub fn find_output_with_address(outputs: List<Output>, address: Address) {
   expect Some(output) = list.find(outputs, fn(o) { o.address == address })
   output
 }
+
+pub fn must_have_one_output_with_policy(
+  outputs: List<Output>,
+  policy_id: PolicyId,
+) {
+  list.count(outputs, fn(o) { list.has(o.value |> assets.policies, policy_id) }) == 1
+}
