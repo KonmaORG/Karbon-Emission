@@ -4,6 +4,7 @@ use cardano/transaction.{InlineDatum, Transaction}
 use types.{CETDatum}
 use utils
 
+/// CET Minter =  this will mint the CET token that is emitted from the factory
 validator cet_minter(user_token_policy: PolicyId) {
   mint(redeemer: CETDatum, policy_id: PolicyId, tx: Transaction) {
     let Transaction { mint, inputs, reference_inputs, outputs, .. } = tx
@@ -21,9 +22,13 @@ validator cet_minter(user_token_policy: PolicyId) {
     expect InlineDatum(datum_data) = cet_output.datum
     let redeemer_data: Data = redeemer
     and {
+      // matching the CET qty coming from the redeemer (redeemr hvaing mock value for now)
       qty == cet_qty,
+      // checking samw qty going to user_script
       assets.quantity_of(cet_output.value, policy_id, token_name) == qty,
+      // token name should last 20char of vkh
       utils.token_name_must_be_vkh(inputs, ref_token_name),
+      // check datum and redeemer is same 
       datum_data == redeemer_data,
     }
   }
