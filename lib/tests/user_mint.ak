@@ -80,6 +80,27 @@ test mint_user_token() {
   //   utils.token_name_must_be_vkh([tx_input], token_name)
   utils.script_address_check([tx_output_1], policy_id, token_name, key_haha)
 }
+
+test must_have_one() {
+  let policies = mock_policy_id(1)
+  let add1 = mock_pub_key_address(1, None)
+
+  let tx_output_1 =
+    txn.new_tx_output(add1)
+      |> add_asset_to_tx_output(from_asset(policies, "ABC", 1))
+  utils.must_have_one_output_with_policy([tx_output_1], policies, add1)
+}
+
+test must_have_one_fail() fail {
+  let policies = mock_policy_id(1)
+  let add1 = mock_pub_key_address(1, None)
+
+  let policies1 = mock_policy_id(2)
+  let tx_output_1 =
+    txn.new_tx_output(add1)
+      |> add_asset_to_tx_output(from_asset(policies1, "ABC", 1))
+  utils.must_have_one_output_with_policy([tx_output_1], policies, add1)
+}
 // test state_token() {
 //   let datum =
 //     CampaignDatum {
