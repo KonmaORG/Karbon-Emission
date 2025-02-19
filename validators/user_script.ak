@@ -2,8 +2,8 @@
 // use cardano/assets.{PolicyId}
 // use cardano/transaction.{OutputReference, Transaction}
 
-validator truly_always_true {
+validator user_script(_address: Data) {
   else(_) {
-    True
+    fail
   }
 }
