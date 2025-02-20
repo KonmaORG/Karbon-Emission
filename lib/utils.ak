@@ -57,10 +57,10 @@ pub fn find_ref_input(inputs: List<Input>, policy_id: PolicyId) {
   input
 }
 
-pub fn find_output_with_address(outputs: List<Output>, address: Address) {
-  expect Some(output) = list.find(outputs, fn(o) { o.address == address })
-  output
-}
+// pub fn find_output_with_address(outputs: List<Output>, address: Address) {
+//   expect Some(output) = list.find(outputs, fn(o) { o.address == address })
+//   output
+// }
 
 pub fn must_have_one_output_with_policy(
   outputs: List<Output>,
