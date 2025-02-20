@@ -1,8 +1,8 @@
 use aiken/collection/list
 use aiken/primitive/bytearray
 use cardano/address.{Address, Inline, Script, VerificationKey}
-use cardano/assets.{PolicyId}
-use cardano/transaction.{InlineDatum, Input, Output}
+use cardano/assets.{PolicyId, Value}
+use cardano/transaction.{InlineDatum, Input, Output, Transaction}
 use types.{AddressTuple, PaymentKeyHash, StakeKeyHash}
 
 pub fn script_address_from_tuple(key_hash_tuple: (PaymentKeyHash, StakeKeyHash)) {
@@ -77,3 +77,27 @@ pub fn must_have_one_output_with_policy(
     },
   ) == 1
 }
+
+// pub fn must_send_remaining_token_to_addr(inputs: List<Input>, cet_pid: PolicyId) {
+//   let value = concat_inputs_value(inputs, assets.zero)
+
+//   assets.quantity_of(value)
+//   value
+// }
+
+pub fn concat_inputs_value(inputs: List<Input>, left: Value) {
+  when inputs is {
+    [input, ..rest] ->
+      concat_inputs_value(rest, assets.merge(left, input.output.value))
+    [] -> left
+  }
+}
+// when outputs is {
+//     [output, ..rest] ->
+//       if output.address == addr {
+//         output
+//       } else {
+//         output_by_addr(rest, addr)
+//       }
+//     [] -> fail @"No Output Found By Address"
+//   }
