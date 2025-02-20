@@ -3,6 +3,7 @@ use aiken/primitive/bytearray
 use cardano/address.{Address, Inline, Script, VerificationKey}
 use cardano/assets.{PolicyId, Value}
 use cardano/transaction.{InlineDatum, Input, Output, Transaction}
+use cardano/tx
 use types.{AddressTuple, PaymentKeyHash, StakeKeyHash}
 
 pub fn script_address_from_tuple(key_hash_tuple: (PaymentKeyHash, StakeKeyHash)) {
@@ -91,6 +92,16 @@ pub fn concat_inputs_value(inputs: List<Input>, left: Value) {
       concat_inputs_value(rest, assets.merge(left, input.output.value))
     [] -> left
   }
+}
+
+pub fn total_token_amount(
+  inputs: List<Input>,
+  pid: PolicyId,
+  token: ByteArray,
+  counter: Int,
+) {
+  let total_amt = tx.total_token_amount(inputs, pid, token, counter)
+  total_amt
 }
 // when outputs is {
 //     [output, ..rest] ->
