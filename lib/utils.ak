@@ -1,10 +1,12 @@
 use aiken/collection/list
 use aiken/primitive/bytearray
 use cardano/address.{Address, Inline, Script, VerificationKey}
-use cardano/assets.{PolicyId, Value}
+use cardano/assets.{PolicyId}
 use cardano/transaction.{InlineDatum, Input, Output, Transaction}
-use cardano/tx
+use cardano/value
 use types.{AddressTuple, PaymentKeyHash, StakeKeyHash}
+use types/token.{Token}
+use validation/payout
 
 pub fn script_address_from_tuple(key_hash_tuple: (PaymentKeyHash, StakeKeyHash)) {
   let (pkh, skh) = key_hash_tuple
@@ -79,36 +81,60 @@ pub fn must_have_one_output_with_policy(
   ) == 1
 }
 
-// pub fn must_send_remaining_token_to_addr(inputs: List<Input>, cet_pid: PolicyId) {
-//   let value = concat_inputs_value(inputs, assets.zero)
+pub fn must_send_remaining_token_to_addr(
+  tx: Transaction,
+  cet_pid: PolicyId,
+  cot_pid: PolicyId,
+  cet_tkn: ByteArray,
+  cot_tkn: ByteArray,
+  user_script: Address,
+) {
+  // let value = concat_inputs_value(inputs, assets.zero)
+  let (cet_qty, cot_qty) =
+    do_total_token_amount(tx.inputs, cet_pid, cot_pid, cet_tkn, cot_tkn, 0, 0)
+  let expected_output =
+    value.from_tokens(
+      [
+        Token { pid: cet_pid, tkn: cet_tkn, amt: cet_qty },
+        Token { pid: cot_pid, tkn: cot_tkn, amt: cot_qty },
+      ],
+    )
+  payout.at_least(user_script, expected_output, tx.outputs)
+}
 
-//   assets.quantity_of(value)
-//   value
+// pub fn concat_inputs_value(inputs: List<Input>, left: Value) {
+//   when inputs is {
+//     [input, ..rest] ->
+//       concat_inputs_value(rest, assets.merge(left, input.output.value))
+//     [] -> left
+//   }
 // }
 
-pub fn concat_inputs_value(inputs: List<Input>, left: Value) {
+fn do_total_token_amount(
+  inputs: List<Input>,
+  cet_pid: PolicyId,
+  cot_pid: PolicyId,
+  cet_tkn: ByteArray,
+  cot_tkn: ByteArray,
+  cet_qty: Int,
+  cot_qty: Int,
+) {
   when inputs is {
-    [input, ..rest] ->
-      concat_inputs_value(rest, assets.merge(left, input.output.value))
-    [] -> left
+    [input, ..rest] -> {
+      let cet_amt: Int =
+        assets.quantity_of(input.output.value, cet_pid, cet_tkn)
+      let cot_amt: Int =
+        assets.quantity_of(input.output.value, cot_pid, cot_tkn)
+      do_total_token_amount(
+        rest,
+        cet_pid,
+        cot_pid,
+        cet_tkn,
+        cot_tkn,
+        cet_qty + cet_amt,
+        cot_qty + cot_amt,
+      )
+    }
+    [] -> (cet_qty, cot_qty)
   }
 }
-
-pub fn total_token_amount(
-  inputs: List<Input>,
-  pid: PolicyId,
-  token: ByteArray,
-  counter: Int,
-) {
-  let total_amt = tx.total_token_amount(inputs, pid, token, counter)
-  total_amt
-}
-// when outputs is {
-//     [output, ..rest] ->
-//       if output.address == addr {
-//         output
-//       } else {
-//         output_by_addr(rest, addr)
-//       }
-//     [] -> fail @"No Output Found By Address"
-//   }

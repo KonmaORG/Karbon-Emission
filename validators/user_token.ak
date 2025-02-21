@@ -1,7 +1,6 @@
 use aiken/collection/dict
 use cardano/assets.{PolicyId}
 use cardano/transaction.{Transaction}
-use cardano/value
 use types.{AddressTuple}
 use utils
 
