@@ -21,6 +21,11 @@ name = "aiken-extra/tx_util"
 version = "1.215.202411"
 source = "github"
 
+[[requirements]]
+name = "logical-mechanism/assist"
+version = "v0.5.1"
+source = "github"
+
 [[packages]]
 name = "aiken-lang/stdlib"
 version = "2.2.0"
@@ -42,6 +47,12 @@ source = "github"
 [[packages]]
 name = "aiken-extra/tx_util"
 version = "1.215.202411"
+requirements = []
+source = "github"
+
+[[packages]]
+name = "logical-mechanism/assist"
+version = "v0.5.1"
 requirements = []
 source = "github"
 

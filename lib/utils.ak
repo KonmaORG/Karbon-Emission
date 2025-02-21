@@ -1,8 +1,9 @@
 use aiken/collection/list
 use aiken/primitive/bytearray
 use cardano/address.{Address, Inline, Script, VerificationKey}
-use cardano/assets.{PolicyId}
-use cardano/transaction.{InlineDatum, Input, Output}
+use cardano/assets.{PolicyId, Value}
+use cardano/transaction.{InlineDatum, Input, Output, Transaction}
+use cardano/tx
 use types.{AddressTuple, PaymentKeyHash, StakeKeyHash}
 
 pub fn script_address_from_tuple(key_hash_tuple: (PaymentKeyHash, StakeKeyHash)) {
@@ -57,10 +58,10 @@ pub fn find_ref_input(inputs: List<Input>, policy_id: PolicyId) {
   input
 }
 
-pub fn find_output_with_address(outputs: List<Output>, address: Address) {
-  expect Some(output) = list.find(outputs, fn(o) { o.address == address })
-  output
-}
+// pub fn find_output_with_address(outputs: List<Output>, address: Address) {
+//   expect Some(output) = list.find(outputs, fn(o) { o.address == address })
+//   output
+// }
 
 pub fn must_have_one_output_with_policy(
   outputs: List<Output>,
@@ -77,3 +78,37 @@ pub fn must_have_one_output_with_policy(
     },
   ) == 1
 }
+
+// pub fn must_send_remaining_token_to_addr(inputs: List<Input>, cet_pid: PolicyId) {
+//   let value = concat_inputs_value(inputs, assets.zero)
+
+//   assets.quantity_of(value)
+//   value
+// }
+
+pub fn concat_inputs_value(inputs: List<Input>, left: Value) {
+  when inputs is {
+    [input, ..rest] ->
+      concat_inputs_value(rest, assets.merge(left, input.output.value))
+    [] -> left
+  }
+}
+
+pub fn total_token_amount(
+  inputs: List<Input>,
+  pid: PolicyId,
+  token: ByteArray,
+  counter: Int,
+) {
+  let total_amt = tx.total_token_amount(inputs, pid, token, counter)
+  total_amt
+}
+// when outputs is {
+//     [output, ..rest] ->
+//       if output.address == addr {
+//         output
+//       } else {
+//         output_by_addr(rest, addr)
+//       }
+//     [] -> fail @"No Output Found By Address"
+//   }
