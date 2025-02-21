@@ -87,6 +87,7 @@ pub fn must_send_remaining_token_to_addr(
   cot_pid: PolicyId,
   cet_tkn: ByteArray,
   cot_tkn: ByteArray,
+  burn_qty: Int,
   user_script: Address,
 ) {
   // let value = concat_inputs_value(inputs, assets.zero)
@@ -95,8 +96,8 @@ pub fn must_send_remaining_token_to_addr(
   let expected_output =
     value.from_tokens(
       [
-        Token { pid: cet_pid, tkn: cet_tkn, amt: cet_qty },
-        Token { pid: cot_pid, tkn: cot_tkn, amt: cot_qty },
+        Token { pid: cet_pid, tkn: cet_tkn, amt: cet_qty - burn_qty },
+        Token { pid: cot_pid, tkn: cot_tkn, amt: cot_qty - burn_qty },
       ],
     )
   payout.at_least(user_script, expected_output, tx.outputs)
