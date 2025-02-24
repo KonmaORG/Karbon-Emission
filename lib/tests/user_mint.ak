@@ -75,6 +75,5 @@ test merged_address() {
   expect Script(script) = s_address.payment_credential
   let input = txn.new_tx_input(oref, u_address)
 
-  utils.get_output_addr(script, [input])
-  == o_address
+  utils.get_output_addr(script, [input]) == o_address
 }

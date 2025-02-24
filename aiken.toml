@@ -34,6 +34,3 @@ source = "github"
 name = "logical-mechanism/assist"
 version = "v0.5.1"
 source = "github"
-
-[config.default]
-cot_policyid = "STATE_TOKEN"

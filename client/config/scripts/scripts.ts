@@ -1,12 +1,22 @@
 import { applyDoubleCborEncoding, Validator } from "@lucid-evolution/lucid";
 
-import { truly_always_true_truly_always_true_else } from "./plutus";
+import {
+  cet_minter_cet_minter_mint,
+  user_script_user_script_spend,
+} from "./plutus";
 
-const truly_AlwaysTrue_else = applyDoubleCborEncoding(
-  truly_always_true_truly_always_true_else
+const cet_minter_mint = applyDoubleCborEncoding(cet_minter_cet_minter_mint);
+
+export const CETMINTER: Validator = {
+  type: "PlutusV3",
+  script: cet_minter_mint,
+};
+
+const user_script_spend = applyDoubleCborEncoding(
+  user_script_user_script_spend
 );
 
-export const trulyAlwaysTrue: Validator = {
+export const USERSCRIPT: Validator = {
   type: "PlutusV3",
-  script: truly_AlwaysTrue_else,
+  script: user_script_spend,
 };
