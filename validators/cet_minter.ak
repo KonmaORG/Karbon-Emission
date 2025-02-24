@@ -14,7 +14,10 @@ validator cet_minter {
     expect [Pair(token_name, qty)] =
       mint |> assets.tokens(policy_id) |> dict.to_pairs
     let output_address = utils.get_output_addr(policy_id, inputs)
+    trace @"output_address": output_address
+    trace @"tx.outputs------------": outputs
     let cet_output = find.output_by_addr(outputs, output_address)
+    trace @"........................."
     expect InlineDatum(datum_data) = cet_output.datum
     let redeemer_data: Data = redeemer
     and {

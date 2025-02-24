@@ -25,6 +25,6 @@ const user_script_spend = applyDoubleCborEncoding(
 export const USERSCRIPT: (param: Config) => Validator = (param: Config) => {
   return {
     type: "PlutusV3",
-    script: applyParamsToScript(user_script_spend, [param as unknown as Data]),
+    script: applyParamsToScript(user_script_spend, [Data.to(param, Config)]),
   };
 };
