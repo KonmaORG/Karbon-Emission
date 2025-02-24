@@ -19,8 +19,17 @@ export const AddressSchema = Data.Tuple([
 ]);
 //#endregion
 
-export const CETDatum = Data.Object({
+export const CETDatumSchema = Data.Object({
   location: Data.Bytes(),
   cet_qty: Data.Integer(),
   time: Data.Integer(),
 });
+export type CETDatum = Data.Static<typeof CETDatumSchema>;
+export const CETDatum = CETDatumSchema as unknown as CETDatum;
+// ---
+export const ConfigSchema = Data.Object({
+  cet_policyid: Data.Bytes(),
+  cot_policyid: Data.Bytes(),
+});
+export type Config = Data.Static<typeof ConfigSchema>;
+export const Config = ConfigSchema as unknown as Config;
