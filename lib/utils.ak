@@ -1,5 +1,4 @@
 use aiken/collection/list
-use aiken/primitive/bytearray
 use cardano/address.{Address, Inline, Script, VerificationKey}
 use cardano/assets.{PolicyId}
 use cardano/transaction.{InlineDatum, Input, Output, Transaction}
@@ -37,18 +36,6 @@ pub fn script_address_check(
     output.address == script_address_from_tuple(redeemer),
     address_datum == address_data,
   }
-}
-
-pub fn token_name_must_be_vkh(inputs: List<Input>, token_name: ByteArray) {
-  list.any(
-    inputs,
-    fn(i) {
-      when i.output.address.payment_credential is {
-        VerificationKey(vkh) -> bytearray.slice(vkh, 18, 27) == token_name
-        _ -> False
-      }
-    },
-  )
 }
 
 pub fn find_ref_input(inputs: List<Input>, policy_id: PolicyId) {
@@ -96,8 +83,9 @@ pub fn must_send_remaining_token_to_addr(
   let expected_output =
     value.from_tokens(
       [
-        Token { pid: cet_pid, tkn: cet_tkn, amt: cet_qty - burn_qty },
-        Token { pid: cot_pid, tkn: cot_tkn, amt: cot_qty - burn_qty },
+        Token { pid: cet_pid, tkn: cet_tkn, amt: cet_qty + burn_qty },
+        //burn_qty is negative value
+        Token { pid: cot_pid, tkn: cot_tkn, amt: cot_qty + burn_qty },
       ],
     )
   payout.at_least(user_script, expected_output, tx.outputs)
@@ -137,5 +125,15 @@ fn do_total_token_amount(
       )
     }
     [] -> (cet_qty, cot_qty)
+  }
+}
+
+pub fn get_output_addr(script: PolicyId, inputs: List<Input>) {
+  expect Some(input) = list.head(inputs)
+  when input.output.address.stake_credential is {
+    Some(Inline(VerificationKey(skh))) ->
+      address.from_script(script)
+        |> address.with_delegation_key(skh)
+    _ -> fail @"Input Stake Componenet Missing"
   }
 }

@@ -1,4 +1,5 @@
 use aiken/collection/dict
+use cardano/address.{Script}
 use cardano/assets.{PolicyId}
 use cardano/transaction.{OutputReference, Transaction, find_input}
 use config
@@ -7,20 +8,22 @@ use utils
 
 // all the offsetting will be done from this contract
 
-validator user_script(_address: Data, cet_policyid: PolicyId) {
+validator user_script(cet_policyid: PolicyId) {
   spend(
     _datum: Option<CETDatum>,
     redeemer: Int,
     oref: OutputReference,
     tx: Transaction,
   ) {
-    let Transaction { inputs, outputs, mint, .. } = tx
+    let Transaction { inputs, mint, .. } = tx
     expect Some(self_input) = find_input(inputs, oref)
+    expect Script(script) = self_input.output.address.payment_credential
     when redeemer is {
+      // burning CET==COT
       0 -> {
-        expect [Pair(_, cet_qty)] =
+        expect [Pair(cet_tkn, cet_qty)] =
           mint |> assets.tokens(cet_policyid) |> dict.to_pairs
-        expect [Pair(_, cot_qty)] =
+        expect [Pair(cot_tkn, cot_qty)] =
           mint |> assets.tokens(config.cot_policyid) |> dict.to_pairs
         and {
           // CET qty should be negative
@@ -28,16 +31,14 @@ validator user_script(_address: Data, cet_policyid: PolicyId) {
           // to burn CET qty === COT qty
           cet_qty == cot_qty,
           // sending the left over COT to user_script addr
-          utils.must_have_one_output_with_policy(
-            outputs,
-            config.cot_policyid,
-            self_input.output.address,
-          ),
-          // sending the left over CET to user_script addr
-          utils.must_have_one_output_with_policy(
-            outputs,
+          utils.must_send_remaining_token_to_addr(
+            tx,
             cet_policyid,
-            self_input.output.address,
+            config.cot_policyid,
+            cet_tkn,
+            cot_tkn,
+            cot_qty,
+            utils.get_output_addr(script, inputs),
           ),
         }
       }
