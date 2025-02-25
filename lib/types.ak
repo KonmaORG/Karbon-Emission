@@ -20,3 +20,7 @@ pub type Config {
   cet_policyid: PolicyId,
   cot_policyid: PolicyId,
 }
+
+pub type BurnRedeemer {
+  cot_policyid: PolicyId,
+}
