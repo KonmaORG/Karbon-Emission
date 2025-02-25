@@ -13,8 +13,8 @@ export const siteConfig = {
       href: "/burn",
     },
     {
-      label: "Blog",
-      href: "/blog",
+      label: "Admin",
+      href: "/admin",
     },
     {
       label: "About",

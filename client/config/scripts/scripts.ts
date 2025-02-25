@@ -12,6 +12,7 @@ import {
 import { Config } from "@/types/cardano";
 import {
   config_datum_holder_config_datum_holder_spend,
+  identification_nft_identification_nft_mint,
   validator_contract_validator_contract_mint,
   validator_contract_validator_contract_mint_mint,
 } from "./karbonLedger";
@@ -38,6 +39,18 @@ export const USERSCRIPT: (param: Config) => Validator = (param: Config) => {
 
 // ----
 //------------------------------------------------------------------
+
+const identificationNFT_Mint = applyDoubleCborEncoding(
+  identification_nft_identification_nft_mint
+);
+
+export function IdentificationNFT_MintValidator(params: any[]): Validator {
+  return {
+    type: "PlutusV3",
+    script: applyParamsToScript(identificationNFT_Mint, params),
+  };
+}
+
 const configdatumholderscript = applyDoubleCborEncoding(
   config_datum_holder_config_datum_holder_spend
 );

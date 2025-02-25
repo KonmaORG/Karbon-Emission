@@ -4,7 +4,7 @@ import {
   fromText,
 } from "@lucid-evolution/lucid";
 const cotToken = {
-  ["0dbb7fe1d5c9bdadd2bfd43e4b65f60283334edeb0a39a89c690e2cd" +
+  ["7ee78de62f0828150a49d487a5cbfa852079ff77e280a61917e4b630" +
   fromText("Emision")]: 10n,
 };
 

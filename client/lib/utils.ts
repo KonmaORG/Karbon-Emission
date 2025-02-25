@@ -56,7 +56,6 @@ export function getAddress(validatorFunction: { (): Validator; (): Script }) {
 
 export async function refUtxo(lucid: LucidEvolution) {
   const address = getAddress(ConfigDatumHolderValidator);
-  console.log("configDatum: ", address);
   const ref_configNFT =
     identificationPolicyid + fromText("KarbonIdentificationNFT");
   const utxos = await lucid.utxosAtWithUnit(address, ref_configNFT);
