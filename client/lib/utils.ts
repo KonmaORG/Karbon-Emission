@@ -1,3 +1,13 @@
+import { identificationPolicyid, NETWORK } from "@/config";
+import { ConfigDatumHolderValidator } from "@/config/scripts/scripts";
+import {
+  fromText,
+  LucidEvolution,
+  mintingPolicyToId,
+  Script,
+  Validator,
+  validatorToAddress,
+} from "@lucid-evolution/lucid";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -30,4 +40,25 @@ export function handleError(error: any) {
   // type: "error",
   // });
   console.error(failureCause ?? { error });
+}
+
+export function getPolicyId(validatorFunction: { (): Validator; (): Script }) {
+  const validator: Validator = validatorFunction();
+  const policyID = mintingPolicyToId(validator);
+  return policyID;
+}
+
+export function getAddress(validatorFunction: { (): Validator; (): Script }) {
+  const validator: Validator = validatorFunction();
+  const address = validatorToAddress(NETWORK, validator);
+  return address;
+}
+
+export async function refUtxo(lucid: LucidEvolution) {
+  const address = getAddress(ConfigDatumHolderValidator);
+  const ref_configNFT =
+    identificationPolicyid + fromText("KarbonIdentificationNFT");
+  const utxos = await lucid.utxosAtWithUnit(address, ref_configNFT);
+
+  return utxos;
 }

@@ -1,10 +1,9 @@
-import { COTPOLICYID, NETWORK } from "@/config";
+import { NETWORK } from "@/config";
 import { CETMINTER, COTMINTER, USERSCRIPT } from "@/config/scripts/scripts";
 import { WalletConnection } from "@/context/walletContext";
-import { CETDatum } from "@/types/cardano";
+import { refUtxo } from "@/lib/utils";
 import {
   credentialToAddress,
-  Data,
   fromText,
   mintingPolicyToId,
   paymentCredentialOf,
@@ -12,25 +11,19 @@ import {
   validatorToAddress,
 } from "@lucid-evolution/lucid";
 
-export async function CetMinter(
-  walletConnection: WalletConnection,
-  datum: CETDatum
-) {
+export async function Burn(walletConnection: WalletConnection) {
+  const qty = -10n;
   const { lucid, address } = walletConnection;
   try {
     if (!lucid || !address) throw new Error("Connect Wallet");
-    const mintingPolicy = CETMINTER;
-    const policyId = mintingPolicyToId(mintingPolicy);
-    const tokens = { [policyId + fromText("Emision")]: datum.cet_qty };
-
+    const cetMintingPolicy = CETMINTER;
+    const cetPolicyId = mintingPolicyToId(cetMintingPolicy);
     const cotMintingPolicy = COTMINTER();
     const cotPolicyId = mintingPolicyToId(cotMintingPolicy);
-
     const userScriptValidator = USERSCRIPT({
-      cet_policyid: policyId,
+      cet_policyid: cetPolicyId,
       cot_policyid: cotPolicyId,
     });
-
     const userScript = validatorToAddress(NETWORK, userScriptValidator);
     const userScriptAddress = credentialToAddress(
       NETWORK,
@@ -38,18 +31,24 @@ export async function CetMinter(
       stakeCredentialOf(address)
     );
 
-    const reedemer = Data.to(datum, CETDatum);
-    const utxo = (await lucid.utxosAt(address))[0];
+    const cet_utxos = await lucid.utxosAtWithUnit(
+      userScriptAddress,
+      cetPolicyId + fromText("Emision")
+    );
+    const cot_utxos = await lucid.utxosAtWithUnit(
+      userScriptAddress,
+      cotPolicyId + fromText("Emision")
+    );
+
+    const cetBurn = { [cetPolicyId + fromText("Emision")]: qty };
+    const cotBurn = { [cotPolicyId + fromText("Emision")]: qty };
+    const refutxo = await refUtxo(lucid);
+
     const tx = await lucid
       .newTx()
-      .mintAssets(tokens, reedemer)
-      .collectFrom([utxo])
-      .pay.ToAddressWithData(
-        userScriptAddress,
-        { kind: "inline", value: reedemer },
-        { lovelace: 1n, ...tokens }
-      )
-      .attach.MintingPolicy(mintingPolicy)
+      .readFrom(refutxo)
+      .collectFrom([...cet_utxos, ...cot_utxos])
+      // .mintAssets(cetBurn, )
       .complete();
 
     const signed = await tx.sign.withWallet().complete();
