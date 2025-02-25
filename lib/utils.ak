@@ -137,3 +137,19 @@ pub fn get_output_addr(script: PolicyId, inputs: List<Input>) {
     _ -> fail @"Input Stake Componenet Missing"
   }
 }
+
+pub fn user_script_address(inputs: List<Input>, outputs: List<Output>) {
+  expect Some(input) = list.head(inputs)
+  expect Some(Inline(VerificationKey(skh))) =
+    input.output.address.stake_credential
+  expect Some(output) = list.head(outputs)
+  when (output.address.payment_credential, output.address.stake_credential) is {
+    (Script(_), Some(Inline(VerificationKey(o_sk)))) ->
+      if skh == o_sk {
+        output
+      } else {
+        fail @"Incorrect Stake Component"
+      }
+    _ -> fail @"Incorrect Tokens Output Address"
+  }
+}

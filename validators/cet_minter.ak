@@ -3,7 +3,6 @@ use cardano/assets.{PolicyId}
 use cardano/transaction.{InlineDatum, Transaction}
 use types.{CETDatum}
 use utils
-use validation/find
 
 /// CET Minter =  this will mint the CET token that is emitted from the factory
 validator cet_minter {
@@ -13,10 +12,7 @@ validator cet_minter {
     // checking for minting tokens
     expect [Pair(token_name, qty)] =
       mint |> assets.tokens(policy_id) |> dict.to_pairs
-    let output_address = utils.get_output_addr(policy_id, inputs)
-    trace @"output_address": output_address
-    trace @"tx.outputs------------": outputs
-    let cet_output = find.output_by_addr(outputs, output_address)
+    let cet_output = utils.user_script_address(inputs, outputs)
     trace @"........................."
     expect InlineDatum(datum_data) = cet_output.datum
     let redeemer_data: Data = redeemer
