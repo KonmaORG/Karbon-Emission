@@ -9,8 +9,8 @@ export const siteConfig = {
       href: "/minter",
     },
     {
-      label: "Pricing",
-      href: "/pricing",
+      label: "Burn",
+      href: "/burn",
     },
     {
       label: "Blog",
