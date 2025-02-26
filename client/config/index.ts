@@ -14,4 +14,4 @@ export const PROVIDER: Provider = new Blockfrost(BF_URL, BF_PID);
 export const COTPOLICYID: PolicyId =
   "c51587c8961294b98b440c30ec96cdf9b4d7bde97a960c7cb62f3c78";
 export const identificationPolicyid =
-  "c083520a0056f2f873f14eb50091881f31c8cd78e7315fa851ecb8a0";
+  "e2c8e87d4ed069180dfd507a7580d47896d5e1ad6f893a0c159b1ab5";

@@ -7,14 +7,16 @@ import {
   credentialToAddress,
   Data,
   fromText,
+  LucidEvolution,
   mintingPolicyToId,
   paymentCredentialOf,
   stakeCredentialOf,
+  UTxO,
   validatorToAddress,
 } from "@lucid-evolution/lucid";
 
 export async function Burn(walletConnection: WalletConnection) {
-  const qty = -10n;
+  const qty = 10n; //burn qty
   const { lucid, address } = walletConnection;
   try {
     if (!lucid || !address) throw new Error("Connect Wallet");
@@ -30,17 +32,15 @@ export async function Burn(walletConnection: WalletConnection) {
       stakeCredentialOf(address)
     );
 
-    const cet_utxos = await lucid.utxosAtWithUnit(
-      userScriptAddress,
-      cetPolicyId + fromText("Emision")
-    );
-    const cot_utxos = await lucid.utxosAtWithUnit(
-      userScriptAddress,
-      cotPolicyId + fromText("Emision")
-    );
+    const utxos = await lucid.utxosAt(userScriptAddress);
 
-    const cetBurn = { [cetPolicyId + fromText("Emision")]: qty };
-    const cotBurn = { [cotPolicyId + fromText("Emision")]: qty };
+    const { outputTokens, cetBurn, cotBurn } = await cet_cot(
+      utxos,
+      qty,
+      cetPolicyId,
+      cotPolicyId
+    );
+    console.log(await cet_cot(utxos, 10n, cetPolicyId, cotPolicyId));
     const refutxo = await refUtxo(lucid);
 
     const cetBurnRedeemer: BurnRedeemer = { cot_policyId: cotPolicyId };
@@ -48,18 +48,16 @@ export async function Burn(walletConnection: WalletConnection) {
       action: "Burn",
       amount: 0n,
       oref: {
-        transaction_id: cet_utxos[0].txHash,
-        output_index: BigInt(cet_utxos[0].outputIndex),
+        transaction_id: utxos[0].txHash,
+        output_index: BigInt(utxos[0].outputIndex),
       },
     };
     const tx = await lucid
       .newTx()
       .readFrom(refutxo)
-      .collectFrom([...cet_utxos, ...cot_utxos], Data.to(0n))
+      .collectFrom(utxos, Data.to(0n))
       .pay.ToAddress(userScriptAddress, {
-        lovelace: 1_000_000n,
-        // ...cetBurn,
-        // ...cotBurn,
+        ...outputTokens,
       })
       .mintAssets(cetBurn, Data.to(cetBurnRedeemer, BurnRedeemer))
       .mintAssets(cotBurn, Data.to(cotBurnRedeemer, KarbonRedeemerMint))
@@ -107,6 +105,46 @@ export async function CotFromUserToScript(walletConnection: WalletConnection) {
     console.log("txHash: ", txHash);
   } catch (error: any) {
     console.error(error);
+    throw error;
+  }
+}
+
+async function cet_cot(
+  utxos: UTxO[],
+  burnQty: bigint,
+  cetPolicyId: string,
+  cotPolicyId: string
+) {
+  try {
+    const original: { [key: string]: bigint } = {};
+    const cetBurn: { [key: string]: bigint } = {};
+    const cotBurn: { [key: string]: bigint } = {};
+    let cetBurned = 0n;
+    let cotBurned = 0n;
+    for (const utxo of utxos) {
+      for (const [asset, amount] of Object.entries(utxo.assets)) {
+        const assetKey = asset;
+        const assetValue = amount;
+
+        original[assetKey] = (original[assetKey] || 0n) + assetValue;
+
+        if (assetKey.startsWith(cetPolicyId) && cetBurned === 0n) {
+          const burnValue = burnQty > assetValue ? assetValue : BigInt(burnQty);
+          cetBurn[assetKey] = -burnValue;
+          original[assetKey] -= burnValue;
+          cetBurned = -burnValue;
+          original[assetKey] === 0n && delete original[assetKey];
+        } else if (assetKey.startsWith(cotPolicyId) && cotBurned === 0n) {
+          const burnValue = burnQty > assetValue ? assetValue : BigInt(burnQty);
+          cotBurn[assetKey] = -burnValue;
+          original[assetKey] -= burnValue;
+          cotBurned = -burnValue;
+          original[assetKey] === 0n && delete original[assetKey];
+        }
+      }
+    }
+    return { outputTokens: original, cetBurn, cotBurn };
+  } catch (error: any) {
     throw error;
   }
 }

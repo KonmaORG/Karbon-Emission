@@ -56,7 +56,9 @@ export default function ConfigDatumHolder() {
       const cetPolicyId = mintingPolicyToId(cetMintingPolicy);
       const cotMintingPolicy = COTMINTER();
       const cotPolicyId = mintingPolicyToId(cotMintingPolicy);
-
+      console.log("configDatum", contractAddress);
+      console.log("cetPolicyId", cetPolicyId);
+      console.log("cotPolicyId", cotPolicyId);
       const assestClass = {
         policyid: "",
         asset_name: fromText(""),
