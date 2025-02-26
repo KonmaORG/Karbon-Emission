@@ -2,7 +2,7 @@ use aiken/collection/dict
 use cardano/address.{Script}
 use cardano/assets.{PolicyId}
 use cardano/transaction.{OutputReference, Transaction, find_input}
-use types.{CETDatum}
+// use types.{CETDatum}
 use utils
 
 // all the offsetting will be done from this contract
@@ -26,18 +26,18 @@ validator user_script(cet_policyid: PolicyId, cot_policyid: PolicyId) {
           (cet_qty < 0)?,
           // to burn CET qty === COT qty
           (cet_qty == cot_qty)?,
+          // sending the left over COT to user_script addr
+          utils.must_send_remaining_token_to_addr(
+            tx,
+            cet_policyid,
+            cot_policyid,
+            cet_tkn,
+            cot_tkn,
+            cot_qty,
+            user_script_address,
+          )?,
         }
       }
-      // sending the left over COT to user_script addr
-      // utils.must_send_remaining_token_to_addr(
-      //   tx,
-      //   cet_policyid,
-      //   cot_policyid,
-      //   cet_tkn,
-      //   cot_tkn,
-      //   cot_qty,
-      //   user_script_address,
-      // )?,
       1 ->
         // can withdraw COT 
 

@@ -80,15 +80,42 @@ pub fn must_send_remaining_token_to_addr(
   // let value = concat_inputs_value(inputs, assets.zero)
   let (cet_qty, cot_qty) =
     do_total_token_amount(tx.inputs, cet_pid, cot_pid, cet_tkn, cot_tkn, 0, 0)
-  let expected_output =
-    value.from_tokens(
-      [
-        Token { pid: cet_pid, tkn: cet_tkn, amt: cet_qty + burn_qty },
-        //burn_qty is negative value
-        Token { pid: cot_pid, tkn: cot_tkn, amt: cot_qty + burn_qty },
-      ],
-    )
-  payout.at_least(user_script, expected_output, tx.outputs)
+
+  let o_cet = cet_qty + burn_qty
+  let o_cot = cot_qty + burn_qty
+  // let expected_output =
+  //   when (o_cet, o_cot) is {
+  //     (0, 0) -> value.from_token(Token { pid: "", tkn: "", amt: 1 })
+  //     (qty, 0) ->
+  //       value.from_tokens(
+  //         [Token { pid: cet_pid, tkn: cet_tkn, amt: qty + burn_qty }],
+  //       )
+  //     (0, qty) ->
+  //       value.from_tokens(
+  //         [Token { pid: cot_pid, tkn: cot_tkn, amt: qty + burn_qty }],
+  //       )
+  //     (cet_qty, cot_qty) ->
+  //       value.from_tokens(
+  //         [
+  //           Token { pid: cet_pid, tkn: cet_tkn, amt: cet_qty + burn_qty },
+  //           //burn_qty is negative value
+  //           Token { pid: cot_pid, tkn: cot_tkn, amt: cot_qty + burn_qty },
+  //         ],
+  //       )
+  //   }
+  if o_cet == 0 && o_cot == 0 {
+    True
+  } else {
+    let expected_output =
+      value.from_tokens(
+        [
+          Token { pid: cet_pid, tkn: cet_tkn, amt: o_cet },
+          //burn_qty is negative value
+          Token { pid: cot_pid, tkn: cot_tkn, amt: o_cot },
+        ],
+      )
+    payout.at_least(user_script, expected_output, tx.outputs)?
+  }
 }
 
 // pub fn concat_inputs_value(inputs: List<Input>, left: Value) {

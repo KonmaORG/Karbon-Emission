@@ -56,11 +56,11 @@ export async function Burn(walletConnection: WalletConnection) {
       .newTx()
       .readFrom(refutxo)
       .collectFrom([...cet_utxos, ...cot_utxos], Data.to(0n))
-      // .pay.ToAddress(userScriptAddress, {
-      //   lovelace: 1_000_000n,
-      //   ...cetBurn,
-      //   ...cotBurn,
-      // })
+      .pay.ToAddress(userScriptAddress, {
+        lovelace: 1_000_000n,
+        // ...cetBurn,
+        // ...cotBurn,
+      })
       .mintAssets(cetBurn, Data.to(cetBurnRedeemer, BurnRedeemer))
       .mintAssets(cotBurn, Data.to(cotBurnRedeemer, KarbonRedeemerMint))
       .attach.MintingPolicy(cetMintingPolicy)
