@@ -45,7 +45,7 @@ export default function WalletComponent() {
     const updatedWallets = wallets;
     installedWallets.forEach((provider) => {
       const index = updatedWallets.findIndex(
-        (wallet) => wallet.name.toLowerCase() === provider.name.toLowerCase()
+        (wallet) => wallet.name.toLowerCase() === provider.name.toLowerCase(),
       );
       if (index !== -1) {
         updatedWallets[index] = {

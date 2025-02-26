@@ -7,7 +7,6 @@ import {
   credentialToAddress,
   Data,
   fromText,
-  LucidEvolution,
   mintingPolicyToId,
   paymentCredentialOf,
   stakeCredentialOf,
@@ -29,7 +28,7 @@ export async function Burn(walletConnection: WalletConnection) {
     const userScriptAddress = credentialToAddress(
       NETWORK,
       paymentCredentialOf(userScript),
-      stakeCredentialOf(address)
+      stakeCredentialOf(address),
     );
 
     const utxos = await lucid.utxosAt(userScriptAddress);
@@ -38,9 +37,8 @@ export async function Burn(walletConnection: WalletConnection) {
       utxos,
       qty,
       cetPolicyId,
-      cotPolicyId
+      cotPolicyId,
     );
-    console.log(await cet_cot(utxos, 10n, cetPolicyId, cotPolicyId));
     const refutxo = await refUtxo(lucid);
 
     const cetBurnRedeemer: BurnRedeemer = { cot_policyId: cotPolicyId };
@@ -83,13 +81,12 @@ export async function CotFromUserToScript(walletConnection: WalletConnection) {
     const cetPolicyId = mintingPolicyToId(cetMintingPolicy);
     const cotMintingPolicy = COTMINTER();
     const cotPolicyId = mintingPolicyToId(cotMintingPolicy);
-    console.log("COTPOLICYID: ", cotPolicyId);
     const userScriptValidator = USERSCRIPT([cetPolicyId, cotPolicyId]);
     const userScript = validatorToAddress(NETWORK, userScriptValidator);
     const userScriptAddress = credentialToAddress(
       NETWORK,
       paymentCredentialOf(userScript),
-      stakeCredentialOf(address)
+      stakeCredentialOf(address),
     );
 
     const tx = await lucid
@@ -113,7 +110,7 @@ async function cet_cot(
   utxos: UTxO[],
   burnQty: bigint,
   cetPolicyId: string,
-  cotPolicyId: string
+  cotPolicyId: string,
 ) {
   try {
     const original: { [key: string]: bigint } = {};
