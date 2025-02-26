@@ -22,10 +22,7 @@ export async function Burn(walletConnection: WalletConnection) {
     const cetPolicyId = mintingPolicyToId(cetMintingPolicy);
     const cotMintingPolicy = COTMINTER();
     const cotPolicyId = mintingPolicyToId(cotMintingPolicy);
-    const userScriptValidator = USERSCRIPT({
-      cet_policyid: cetPolicyId,
-      cot_policyid: cotPolicyId,
-    });
+    const userScriptValidator = USERSCRIPT([cetPolicyId, cotPolicyId]);
     const userScript = validatorToAddress(NETWORK, userScriptValidator);
     const userScriptAddress = credentialToAddress(
       NETWORK,
@@ -59,15 +56,15 @@ export async function Burn(walletConnection: WalletConnection) {
       .newTx()
       .readFrom(refutxo)
       .collectFrom([...cet_utxos, ...cot_utxos], Data.to(0n))
-      //   .pay.ToAddress(userScriptAddress, {
-      //     lovelace: 1_000_000n,
-      //     ...cetBurn,
-      //     ...cotBurn,
-      //   })
-      // .mintAssets(cetBurn, Data.to(cetBurnRedeemer, BurnRedeemer))
-      // .mintAssets(cotBurn, Data.to(cotBurnRedeemer, KarbonRedeemerMint))
-      // .attach.MintingPolicy(cetMintingPolicy)
-      // .attach.MintingPolicy(cotMintingPolicy)
+      // .pay.ToAddress(userScriptAddress, {
+      //   lovelace: 1_000_000n,
+      //   ...cetBurn,
+      //   ...cotBurn,
+      // })
+      .mintAssets(cetBurn, Data.to(cetBurnRedeemer, BurnRedeemer))
+      .mintAssets(cotBurn, Data.to(cotBurnRedeemer, KarbonRedeemerMint))
+      .attach.MintingPolicy(cetMintingPolicy)
+      .attach.MintingPolicy(cotMintingPolicy)
       .attach.Script(userScriptValidator)
       .complete();
 
@@ -89,10 +86,7 @@ export async function CotFromUserToScript(walletConnection: WalletConnection) {
     const cotMintingPolicy = COTMINTER();
     const cotPolicyId = mintingPolicyToId(cotMintingPolicy);
     console.log("COTPOLICYID: ", cotPolicyId);
-    const userScriptValidator = USERSCRIPT({
-      cet_policyid: cetPolicyId,
-      cot_policyid: cotPolicyId,
-    });
+    const userScriptValidator = USERSCRIPT([cetPolicyId, cotPolicyId]);
     const userScript = validatorToAddress(NETWORK, userScriptValidator);
     const userScriptAddress = credentialToAddress(
       NETWORK,

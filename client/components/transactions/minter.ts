@@ -26,10 +26,7 @@ export async function CetMinter(
     const cotMintingPolicy = COTMINTER();
     const cotPolicyId = mintingPolicyToId(cotMintingPolicy);
 
-    const userScriptValidator = USERSCRIPT({
-      cet_policyid: policyId,
-      cot_policyid: cotPolicyId,
-    });
+    const userScriptValidator = USERSCRIPT([policyId, cotPolicyId]);
 
     const userScript = validatorToAddress(NETWORK, userScriptValidator);
     const userScriptAddress = credentialToAddress(
