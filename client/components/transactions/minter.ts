@@ -14,7 +14,7 @@ import {
 
 export async function CetMinter(
   walletConnection: WalletConnection,
-  datum: CETDatum
+  datum: CETDatum,
 ) {
   const { lucid, address } = walletConnection;
   try {
@@ -32,7 +32,7 @@ export async function CetMinter(
     const userScriptAddress = credentialToAddress(
       NETWORK,
       paymentCredentialOf(userScript),
-      stakeCredentialOf(address)
+      stakeCredentialOf(address),
     );
     const reedemer = Data.to(datum, CETDatum);
     const utxo = (await lucid.utxosAt(address))[0];
@@ -43,7 +43,7 @@ export async function CetMinter(
       .pay.ToAddressWithData(
         userScriptAddress,
         { kind: "inline", value: reedemer },
-        { lovelace: 1n, ...tokens }
+        { lovelace: 1n, ...tokens },
       )
       .attach.MintingPolicy(mintingPolicy)
       .complete();
