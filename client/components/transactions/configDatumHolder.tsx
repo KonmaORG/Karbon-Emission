@@ -4,12 +4,8 @@ import {
   fromText,
   mintingPolicyToId,
   paymentCredentialOf,
-  Script,
-  scriptHashToCredential,
   SpendingValidator,
-  Validator,
   validatorToAddress,
-  validatorToScriptHash,
 } from "@lucid-evolution/lucid";
 import React from "react";
 import { Button } from "../ui/button";
@@ -18,7 +14,6 @@ import {
   ConfigDatumHolderValidator,
   COTMINTER,
 } from "@/config/scripts/scripts";
-import { getAddress, handleError } from "@/lib/utils";
 import { identificationPolicyid, NETWORK } from "@/config";
 import { ConfigDatum } from "@/types/cardano";
 
@@ -34,10 +29,6 @@ export default function ConfigDatumHolder() {
   const [WalletConnection] = useWallet();
   const { lucid, address } = WalletConnection;
 
-  let signer1 = process.env.NEXT_PUBLIC_SIGNER_1 as string;
-  let signer2 = process.env.NEXT_PUBLIC_SIGNER_2 as string;
-  let signer3 = process.env.NEXT_PUBLIC_SIGNER_3 as string;
-
   async function deposit() {
     if (!lucid || !address) throw "Uninitialized Lucid!!!";
     try {
@@ -49,7 +40,7 @@ export default function ConfigDatumHolder() {
       const validatorContract: SpendingValidator = COTMINTER();
       const validatorContractAddress = validatorToAddress(
         NETWORK,
-        validatorContract,
+        validatorContract
       );
 
       const cetMintingPolicy = CETMINTER;
@@ -84,7 +75,7 @@ export default function ConfigDatumHolder() {
         .pay.ToAddressWithData(
           contractAddress,
           { kind: "inline", value: Data.to(datum, ConfigDatum) },
-          { lovelace: 5_000_000n, ...configNFT },
+          { lovelace: 5_000_000n, ...configNFT }
         )
         .complete();
 
@@ -93,7 +84,7 @@ export default function ConfigDatumHolder() {
       console.log("-------ConfigDatum__Deposite------------");
       console.log(
         "validatorhash",
-        paymentCredentialOf(validatorContractAddress).hash,
+        paymentCredentialOf(validatorContractAddress).hash
       );
       console.log("txHash: ", txHash);
     } catch (error) {

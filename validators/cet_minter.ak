@@ -20,7 +20,7 @@ validator cet_minter {
       and {
         // matching the CET qty coming from the redeemer (redeemr hvaing mock value for now)
         qty == cet_qty,
-        // checking samw qty going to user_script
+        // checking same qty going to user_script
         assets.quantity_of(cet_output.value, policy_id, token_name) == qty,
         // check datum and redeemer is same 
         datum_data == redeemer_data,
