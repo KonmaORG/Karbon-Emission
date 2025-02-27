@@ -28,7 +28,7 @@ export async function Burn(walletConnection: WalletConnection) {
     const userScriptAddress = credentialToAddress(
       NETWORK,
       paymentCredentialOf(userScript),
-      stakeCredentialOf(address)
+      stakeCredentialOf(address),
     );
 
     const utxos = await lucid.utxosAt(userScriptAddress);
@@ -37,7 +37,7 @@ export async function Burn(walletConnection: WalletConnection) {
       utxos,
       qty,
       cetPolicyId,
-      cotPolicyId
+      cotPolicyId,
     );
     const refutxo = await refUtxo(lucid);
 
@@ -86,7 +86,7 @@ export async function CotFromUserToScript(walletConnection: WalletConnection) {
     const userScriptAddress = credentialToAddress(
       NETWORK,
       paymentCredentialOf(userScript),
-      stakeCredentialOf(address)
+      stakeCredentialOf(address),
     );
 
     const tx = await lucid
@@ -110,7 +110,7 @@ async function cet_cot(
   utxos: UTxO[],
   burnQty: bigint,
   cetPolicyId: string,
-  cotPolicyId: string
+  cotPolicyId: string,
 ) {
   try {
     const original: { [key: string]: bigint } = {};
