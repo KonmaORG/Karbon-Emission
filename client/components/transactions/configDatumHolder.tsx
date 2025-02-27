@@ -40,7 +40,7 @@ export default function ConfigDatumHolder() {
       const validatorContract: SpendingValidator = COTMINTER();
       const validatorContractAddress = validatorToAddress(
         NETWORK,
-        validatorContract
+        validatorContract,
       );
 
       const cetMintingPolicy = CETMINTER;
@@ -75,7 +75,7 @@ export default function ConfigDatumHolder() {
         .pay.ToAddressWithData(
           contractAddress,
           { kind: "inline", value: Data.to(datum, ConfigDatum) },
-          { lovelace: 5_000_000n, ...configNFT }
+          { lovelace: 5_000_000n, ...configNFT },
         )
         .complete();
 
@@ -84,7 +84,7 @@ export default function ConfigDatumHolder() {
       console.log("-------ConfigDatum__Deposite------------");
       console.log(
         "validatorhash",
-        paymentCredentialOf(validatorContractAddress).hash
+        paymentCredentialOf(validatorContractAddress).hash,
       );
       console.log("txHash: ", txHash);
     } catch (error) {
