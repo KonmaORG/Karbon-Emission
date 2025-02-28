@@ -1,12 +1,16 @@
+"use client";
 import { Burn, CotFromUserToScript } from "@/components/transactions/burn";
 import { Button } from "@/components/ui/button";
 import { useWallet } from "@/context/walletContext";
-import React from "react";
+import { Input } from "@heroui/input";
+import React, { useState } from "react";
 
 export default function BurnPage() {
   const [WalletConnection] = useWallet();
+  const [qty, setQty] = useState("0");
+
   async function BurnClient() {
-    const result = await Burn(WalletConnection);
+    const result = await Burn(WalletConnection, BigInt(parseInt(qty)));
     console.log(result);
   }
 
@@ -16,6 +20,7 @@ export default function BurnPage() {
   }
   return (
     <div className="flex gap-2">
+      <Input placeholder="Mint Quantity" value={qty} onValueChange={setQty} />
       <Button onClick={BurnClient}>Burn</Button>
       <Button onClick={transferToken}>transferToken</Button>
     </div>
