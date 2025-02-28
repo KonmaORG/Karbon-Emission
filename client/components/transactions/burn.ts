@@ -14,8 +14,7 @@ import {
   validatorToAddress,
 } from "@lucid-evolution/lucid";
 
-export async function Burn(walletConnection: WalletConnection) {
-  const qty = 10n; //burn qty
+export async function Burn(walletConnection: WalletConnection, qty: bigint) {
   const { lucid, address } = walletConnection;
   try {
     if (!lucid || !address) throw new Error("Connect Wallet");
