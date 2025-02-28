@@ -58,7 +58,7 @@ export default function EmulatorConnector() {
           };
           return acc;
         },
-        {} as Record<string, { account: EmulatorAccount; connected: boolean }>
+        {} as Record<string, { account: EmulatorAccount; connected: boolean }>,
       );
       setWallets(updatedWallets);
       setWalletConnection((walletConnection) => {
